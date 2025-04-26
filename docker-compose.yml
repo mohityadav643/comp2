@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:5.7  # Specifying an older MySQL version to avoid issues
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword  # Set a password for the MySQL root user
+      MYSQL_DATABASE: wordpress         # Create a default database
+      MYSQL_USER: user                  # Non-root user for WordPress
+      MYSQL_PASSWORD: userpassword      # Password for the non-root user
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always  # Ensure the container restarts if it crashes
+
+  word:
+    image: wordpress
+    environment:
+      WORDPRESS_DB_HOST: db:3306          # Point to the MySQL container
+      WORDPRESS_DB_NAME: wordpress        # Database name created in MySQL
+      WORDPRESS_DB_USER: user             # Non-root user
+      WORDPRESS_DB_PASSWORD: userpassword # User password
+    depends_on:
+      - db  # Ensure WordPress starts after the database
+    volumes:
+      - wordpress_data:/var/www/html
+    restart: always  # Ensure the container restarts if it crashes
+
+volumes:
+  db_data:
+  wordpress_data:
